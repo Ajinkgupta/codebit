@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CodePen - Pen List</title>
+</head>
+<body>
+    <h1>CodePen - Pen List</h1>
+    <ul>
+        {% for pen in pens %}
+            <li><a href="{% url 'pen_detail' unique_id=pen.unique_id %}">{{ pen.unique_id }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

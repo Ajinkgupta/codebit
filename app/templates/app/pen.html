@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodePen - {{ codepen.unique_id }}</title>
+    <link rel="stylesheet" href="https://unpkg.com/css-splitter/css-splitter.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/monokai-sublime.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <style>
+        body {
+            background-color: #1e1e1e;
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+        }
+
+        .tabs {
+            display: flex;
+            background-color: #333;
+            padding: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            border: none;
+            background-color: transparent;
+            color: #fff;
+            font-size: 16px;
+            outline: none;
+            border-bottom: 2px solid transparent;
+            transition: border-color 0.2s ease-in-out;
+        }
+
+        .tab.active {
+            border-color: #61dafb;
+        }
+
+        .editor-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .editor {
+            flex: 1;
+            overflow: hidden;
+            background-color: #282c34;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .editor textarea {
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: none;
+            color: #fff;
+            background-color: #282c34;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            overflow: hidden;
+        }
+
+        .output-container {
+            width: 50%;
+            background-color: #1e1e1e;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: width 0.3s ease-in-out;
+        }
+
+        .output {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+            color: #fff;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+        }
+
+        .output-controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #282c34;
+        }
+
+        .output-controls button {
+            background-color: #61dafb;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .editor textarea::before {
+            content: "HTML";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #61dafb;
+        }
+
+        .editor textarea[data-lang="css"]::before {
+            content: "CSS";
+        }
+
+        .editor textarea[data-lang="javascript"]::before {
+            content: "JavaScript";
+        }
+    </style>
+</head>
+<body>
+    <div class="tabs">
+        <button class="tab active" onclick="showTab('html')">HTML</button>
+        <button class="tab" onclick="showTab('css')">CSS</button>
+        <button class="tab" onclick="showTab('javascript')">JS</button>
+    </div>
+
+    <div class="editor-container">
+        <div class="editor" id="editor">
+            <textarea id="html-code" data-lang="html">{{ codepen.html_code|escape|safe }}</textarea>
+            <textarea id="css-code" style="display: none;" data-lang="css">{{ codepen.css_code|escape|safe }}</textarea>
+            <textarea id="js-code" style="display: none;" data-lang="javascript">{{ codepen.js_code|escape|safe }}</textarea>
+        </div>
+    </div>
+
+    <div class="output-container" id="output-container">
+        <div class="output" id="output">
+            {{ codepen.html_code|safe }}
+            <style>
+                {{ codepen.css_code|safe }}
+            </style>
+            <script>
+                {{ codepen.js_code|safe }}
+            </script>
+        </div>
+        <div class="output-controls">
+            <button id="increase-output">Increase Output</button>
+            <button id="decrease-output">Decrease Output</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/css-splitter/css-splitter.js"></script>
+    <script>
+        const splitter = cssSplitter();
+        splitter.init(document.getElementById('editor'), document.getElementById('output-container'), 'horizontal');
+
+        function showTab(tabName) {
+            const tabs = ['html', 'css', 'javascript'];
+            tabs.forEach((tab) => {
+                const tabElement = document.getElementById(`${tab}-code`);
+                tabElement.style.display = tab === tabName ? 'block' : 'none';
+                const tabButton = document.querySelector(`.tab.${tab}`);
+                tabButton.classList.toggle('active', tab === tabName);
+            });
+        }
+
+        document.getElementById('increase-output').addEventListener('click', () => {
+            document.getElementById('output-container').style.width = '75%';
+        });
+
+        document.getElementById('decrease-output').addEventListener('click', () => {
+            document.getElementById('output-container').style.width = '50%';
+        });
+
+        // Syntax highlighting
+        document.querySelectorAll('textarea').forEach((code) => {
+            hljs.highlightBlock(code);
+        });
+    </script>
+</body>
+</html>
